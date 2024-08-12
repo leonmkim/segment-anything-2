@@ -16,7 +16,7 @@ import numpy as np
 import cv2
 
 
-class SAM2CameraPredictor(SAM2Base):
+class SAM2OnlinePredictor(SAM2Base):
     """The predictor class to handle user interactions and manage inference states."""
 
     def __init__(
@@ -137,6 +137,24 @@ class SAM2CameraPredictor(SAM2Base):
         self.condition_state["tracking_has_started"] = False
         self.condition_state["frames_already_tracked"] = {}
         return self.condition_state
+    
+    @classmethod
+    def from_pretrained(cls, model_id: str, **kwargs) -> "SAM2OnlinePredictor":
+        """
+        Load a pretrained model from the Hugging Face hub.
+
+        Arguments:
+          model_id (str): The Hugging Face repository ID.
+          **kwargs: Additional arguments to pass to the model constructor.
+
+        Returns:
+          (SAM2OnlinePredictor): The loaded model.
+        """
+        from sam2.build_sam import build_sam2_online_predictor_hf
+
+        sam_model = build_sam2_online_predictor_hf(model_id, **kwargs)
+        # return cls(sam_model)
+        return sam_model
 
     def _obj_id_to_idx(self, obj_id):
         """Map client-side object id to model-side object index."""
