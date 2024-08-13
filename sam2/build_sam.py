@@ -84,6 +84,7 @@ def build_sam2_online_predictor(
     mode="eval",
     hydra_overrides_extra=[],
     apply_postprocessing=True,
+    **kwargs,
 ):
     hydra_overrides = [
         "++model._target_=sam2.sam2_online_predictor.SAM2OnlinePredictor",
