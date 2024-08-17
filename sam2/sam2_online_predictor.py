@@ -91,8 +91,6 @@ class SAM2OnlinePredictor(SAM2Base):
         offload_video_to_cpu=False,
         offload_state_to_cpu=False,
     ):
-        # also reset frame idx https://github.com/facebookresearch/segment-anything-2/issues/90#issuecomment-2289470667
-        # self.frame_idx = 0
         self.condition_state = {}
 
         # whether to offload the video frames to CPU memory
