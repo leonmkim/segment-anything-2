@@ -73,7 +73,8 @@ class SAM2OnlinePredictor(SAM2Base):
         )
         img, width, height = self.perpare_data(img, image_size=self.image_size)
         self.condition_state["images"] = [img]
-        self.condition_state["num_frames"] = len(img)
+        # self.condition_state["num_frames"] = len(img)
+        self.condition_state["num_frames"] = len(self.condition_state["images"])
         self.condition_state["video_height"] = height
         self.condition_state["video_width"] = width
         self._get_image_feature(frame_idx=0, batch_size=1)
@@ -703,11 +704,24 @@ class SAM2OnlinePredictor(SAM2Base):
             "obj_ptr": obj_ptr,
         }
 
-        storage_key = "non_cond_frame_outputs"
         # changes from https://github.com/facebookresearch/segment-anything-2/issues/90#issuecomment-2288309747
-        self.condition_state['output_dict'][storage_key][self.frame_idx] = current_out
+        # storage_key = "non_cond_frame_outputs"
+        # self.condition_state['output_dict'][storage_key][self.frame_idx] = current_out
+        self._manage_memory_obj(self.frame_idx, current_out)
         _, video_res_masks = self._get_orig_video_res_output(pred_masks_gpu)
         return obj_ids, video_res_masks
+    
+    def _manage_memory_obj(self, frame_idx, current_out):
+        output_dict = self.condition_state["output_dict"]
+        non_cond_frame_outputs = output_dict["non_cond_frame_outputs"]
+        non_cond_frame_outputs[frame_idx] = current_out
+
+        key_list = [key for key in output_dict["non_cond_frame_outputs"]]
+        #! TODO: better way to manage memory
+        if len(non_cond_frame_outputs) > self.num_maskmem:
+            for t in range(0, len(non_cond_frame_outputs) - self.num_maskmem):
+                # key, Value = non_cond_frame_outputs.popitem(last=False)
+                _ = non_cond_frame_outputs.pop(key_list[t], None)
 
     @torch.inference_mode()
     def propagate_in_video(
