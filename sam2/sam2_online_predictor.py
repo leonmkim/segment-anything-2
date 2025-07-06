@@ -837,16 +837,18 @@ class SAM2OnlinePredictor(SAM2Base):
     def reset_state(self):
         """Remove all input points or mask in all frames throughout the video."""
         # self._reset_tracking_results(self.condition_state)
-        self._reset_tracking_results()
-        # Remove all object ids
-        self.condition_state["obj_id_to_idx"].clear()
-        self.condition_state["obj_idx_to_id"].clear()
-        self.condition_state["obj_ids"].clear()
-        self.condition_state["point_inputs_per_obj"].clear()
-        self.condition_state["mask_inputs_per_obj"].clear()
-        self.condition_state["output_dict_per_obj"].clear()
-        self.condition_state["temp_output_dict_per_obj"].clear()
+        # check if condition_state is empty
         self.frame_idx = 0
+        if self.condition_state:
+            self._reset_tracking_results()
+            # Remove all object ids
+            self.condition_state["obj_id_to_idx"].clear()
+            self.condition_state["obj_idx_to_id"].clear()
+            self.condition_state["obj_ids"].clear()
+            self.condition_state["point_inputs_per_obj"].clear()
+            self.condition_state["mask_inputs_per_obj"].clear()
+            self.condition_state["output_dict_per_obj"].clear()
+            self.condition_state["temp_output_dict_per_obj"].clear()
 
     def _reset_tracking_results(self):
         """Reset all tracking inputs and results across the videos."""
