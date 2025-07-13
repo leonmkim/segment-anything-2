@@ -7,5 +7,6 @@
 from hydra import initialize_config_module
 from hydra.core.global_hydra import GlobalHydra
 
+# GlobalHydra.instance().clear()  # Clear any previous hydra instance
 if not GlobalHydra.instance().is_initialized():
     initialize_config_module("sam2_configs", version_base="1.2")
